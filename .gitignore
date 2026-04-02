@@ -1,23 +1,33 @@
 ```
-# Dependencies
-packages/
-
 # Build artifacts
 bin/
 obj/
-*.exe
 *.dll
+*.exe
+*.pdb
 *.so
-*.a
-*.lib
-*.obj
-*.o
-*.out
+*.dylib
+*.jar
 *.class
+*.o
+*.obj
+*.out
+
+# Dependencies
+packages/
+node_modules/
+venv/
+.venv/
+__pycache__/
+*.egg-info/
+.Python/
+.pytest_cache/
+.mypy_cache/
 
 # Logs and temp files
 *.log
 *.tmp
+*.temp
 *.swp
 *.swo
 
@@ -29,39 +39,21 @@ obj/
 # Editors
 .vscode/
 .idea/
-*.userprefs
-
-# OS generated files
+*.swp
+*.swo
 .DS_Store
 Thumbs.db
 
-# Testing
-TestResults/
+# Test and coverage
 coverage/
 htmlcov/
-*.coverage
+.coverage
+*.coveragerc
 
-# NuGet packages
-*.nupkg
-packages.lock.json
-
-# Compressed files
+# Distribution / packaging
+dist/
+build/
 *.zip
-*.gz
-*.tar
-*.tgz
-*.bz2
-*.xz
-*.7z
-*.rar
-*.zst
-*.lz4
-*.lzh
-*.cab
-*.arj
-*.rpm
-*.deb
-*.Z
-*.lz
-*.lzo
+*.tar.gz
+*.whl
 ```
