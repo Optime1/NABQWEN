@@ -217,16 +217,19 @@ namespace NeuralFramework
                 double maxPred = double.NegativeInfinity;
                 double maxActual = double.NegativeInfinity;
                 
+                var outputRow = output.Row(i);
+                var labelsRow = dataset.Labels.Row(i);
+                
                 for (int j = 0; j < output.Cols; j++)
                 {
-                    if (output[i, j] > maxPred)
+                    if (outputRow[j] > maxPred)
                     {
-                        maxPred = output[i, j];
+                        maxPred = outputRow[j];
                         predictedClass = j;
                     }
-                    if (dataset.Labels[i, j] > maxActual)
+                    if (labelsRow[j] > maxActual)
                     {
-                        maxActual = dataset.Labels[i, j];
+                        maxActual = labelsRow[j];
                         actualClass = j;
                     }
                 }

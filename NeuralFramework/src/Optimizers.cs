@@ -31,15 +31,21 @@ namespace NeuralFramework
                     norm += gradients[i, j] * gradients[i, j];
             norm = Math.Sqrt(norm);
 
-            if (norm > maxGradientNorm)
+            if (norm > maxGradientNorm && norm > 0)
             {
                 var clipped = new Matrix(gradients.Rows, gradients.Cols);
+                double scale = maxGradientNorm / norm;
                 for (int i = 0; i < gradients.Rows; i++)
                     for (int j = 0; j < gradients.Cols; j++)
-                        clipped[i, j] = gradients[i, j] * maxGradientNorm / norm;
+                        clipped[i, j] = gradients[i, j] * scale;
                 return clipped;
             }
-            return gradients;
+            // Возвращаем копию, чтобы не модифицировать оригинал
+            var result = new Matrix(gradients.Rows, gradients.Cols);
+            for (int i = 0; i < gradients.Rows; i++)
+                for (int j = 0; j < gradients.Cols; j++)
+                    result[i, j] = gradients[i, j];
+            return result;
         }
     }
 
@@ -53,19 +59,22 @@ namespace NeuralFramework
 
         public override void UpdateWeights(DenseLayer layer)
         {
-            var clippedWeightGrad = ClipGradients(layer.Weights);
-            var clippedBiasGrad = ClipGradients(layer.Biases);
+            // Получаем градиенты из слоя
+            var weightGrad = layer.WeightGradients;
+            var biasGrad = layer.BiasGradients;
             
-            // w = w - lr * grad
-            var newWeights = new Matrix(layer.Weights.Rows, layer.Weights.Cols);
+            // Обрезка градиентов
+            var clippedWeightGrad = ClipGradients(weightGrad);
+            var clippedBiasGrad = ClipGradients(biasGrad);
+            
+            // w = w - lr * grad (обновляем веса напрямую в слое)
             for (int i = 0; i < layer.Weights.Rows; i++)
                 for (int j = 0; j < layer.Weights.Cols; j++)
-                    newWeights[i, j] = layer.Weights[i, j] - learningRate * clippedWeightGrad[i, j];
+                    layer.Weights[i, j] -= learningRate * clippedWeightGrad[i, j];
             
-            var newBiases = new Matrix(layer.Biases.Rows, layer.Biases.Cols);
             for (int i = 0; i < layer.Biases.Rows; i++)
                 for (int j = 0; j < layer.Biases.Cols; j++)
-                    newBiases[i, j] = layer.Biases[i, j] - learningRate * clippedBiasGrad[i, j];
+                    layer.Biases[i, j] -= learningRate * clippedBiasGrad[i, j];
         }
     }
 
@@ -95,8 +104,13 @@ namespace NeuralFramework
                 );
             }
 
-            var clippedWeightGrad = ClipGradients(layer.Weights);
-            var clippedBiasGrad = ClipGradients(layer.Biases);
+            // Получаем градиенты из слоя
+            var weightGrad = layer.WeightGradients;
+            var biasGrad = layer.BiasGradients;
+            
+            // Обрезка градиентов
+            var clippedWeightGrad = ClipGradients(weightGrad);
+            var clippedBiasGrad = ClipGradients(biasGrad);
 
             // v = momentum * v - lr * grad
             // w = w + v
@@ -156,8 +170,13 @@ namespace NeuralFramework
                 );
             }
 
-            var clippedWeightGrad = ClipGradients(layer.Weights);
-            var clippedBiasGrad = ClipGradients(layer.Biases);
+            // Получаем градиенты из слоя
+            var weightGrad = layer.WeightGradients;
+            var biasGrad = layer.BiasGradients;
+            
+            // Обрезка градиентов
+            var clippedWeightGrad = ClipGradients(weightGrad);
+            var clippedBiasGrad = ClipGradients(biasGrad);
 
             // Обновление моментов
             for (int i = 0; i < layer.Weights.Rows; i++)

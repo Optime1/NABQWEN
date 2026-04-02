@@ -102,6 +102,17 @@ namespace NeuralFramework
 
         public Matrix Weights => weights;
         public Matrix Biases => biases;
+        
+        // Свойства для доступа к градиентам из оптимизатора
+        internal Matrix WeightGradients => weightGradients;
+        internal Matrix BiasGradients => biasGradients;
+        
+        // Метод для обновления весов с новыми значениями градиентов
+        internal void ApplyUpdate(Matrix newWeights, Matrix newBiases)
+        {
+            weights = newWeights;
+            biases = newBiases;
+        }
     }
 
     /// <summary>

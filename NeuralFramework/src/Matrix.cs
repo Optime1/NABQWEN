@@ -55,8 +55,18 @@ namespace NeuralFramework
 
         public double this[int i, int j]
         {
-            get => Data[i, j];
-            set => Data[i, j] = value;
+            get
+            {
+                if (i < 0 || i >= Rows || j < 0 || j >= Cols)
+                    throw new IndexOutOfRangeException($"Matrix index [{i},{j}] out of bounds ({Rows}x{Cols})");
+                return Data[i, j];
+            }
+            set
+            {
+                if (i < 0 || i >= Rows || j < 0 || j >= Cols)
+                    throw new IndexOutOfRangeException($"Matrix index [{i},{j}] out of bounds ({Rows}x{Cols})");
+                Data[i, j] = value;
+            }
         }
 
         public Matrix Copy() => new Matrix(Data);
@@ -133,6 +143,9 @@ namespace NeuralFramework
 
         public double[] Row(int index)
         {
+            if (index < 0 || index >= Rows)
+                throw new IndexOutOfRangeException($"Row index {index} out of bounds ({Rows} rows)");
+            
             var row = new double[Cols];
             for (int j = 0; j < Cols; j++)
                 row[j] = Data[index, j];
@@ -141,6 +154,13 @@ namespace NeuralFramework
 
         public void SetRow(int index, double[] values)
         {
+            if (index < 0 || index >= Rows)
+                throw new IndexOutOfRangeException($"Row index {index} out of bounds ({Rows} rows)");
+            if (values == null)
+                throw new ArgumentNullException(nameof(values));
+            if (values.Length != Cols)
+                throw new ArgumentException($"Values length ({values.Length}) doesn't match matrix columns ({Cols})");
+            
             for (int j = 0; j < Cols; j++)
                 Data[index, j] = values[j];
         }
