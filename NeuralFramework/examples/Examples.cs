@@ -218,13 +218,14 @@ namespace NeuralFramework.Examples
 
             // Примеры предсказаний
             Console.WriteLine("\nПримеры предсказаний:");
-            for (int i = 0; i < 5; i++)
+            int samplesToShow = Math.Min(5, testData.Count);
+            for (int i = 0; i < samplesToShow; i++)
             {
                 var input = testData.Features.Row(i);
                 var prediction = network.Predict(input);
                 double x = input[0]; // Это нормализованное значение
                 
-                Console.WriteLine($"sin(x): предсказано = {prediction[0]:F4}, фактически = {testData.Labels[i, 0]:F4}");
+                Console.WriteLine($"sin(x): предсказано = {prediction[0]:F4}, фактически = {testData.Labels.Row(i)[0]:F4}");
             }
         }
     }
