@@ -9,48 +9,64 @@ namespace NeuralFramework.Examples
     {
         public static void Run()
         {
-            Console.WriteLine("=== Пример 1: XOR ===\n");
-
-            // Данные XOR
-            var features = new double[][]
+            try
             {
-                new double[] { 0, 0 },
-                new double[] { 0, 1 },
-                new double[] { 1, 0 },
-                new double[] { 1, 1 }
-            };
+                Console.WriteLine("=== Пример 1: XOR ===\n");
 
-            var labels = new double[][]
+                // Данные XOR
+                var features = new double[][]
+                {
+                    new double[] { 0, 0 },
+                    new double[] { 0, 1 },
+                    new double[] { 1, 0 },
+                    new double[] { 1, 1 }
+                };
+
+                var labels = new double[][]
+                {
+                    new double[] { 0 },
+                    new double[] { 1 },
+                    new double[] { 1 },
+                    new double[] { 0 }
+                };
+
+                Console.WriteLine("[DEBUG] Создание датасета...");
+                var dataset = new Dataset(features, labels);
+                Console.WriteLine($"[DEBUG] Датасет создан: {dataset.Count} образцов");
+
+                // Создание сети: 2 -> 4 (ReLU) -> 1 (Sigmoid)
+                Console.WriteLine("[DEBUG] Создание нейросети...");
+                var network = new NeuralNetwork(
+                    new DenseLayer(2, 4, new ReLU()),
+                    new DenseLayer(4, 1, new Sigmoid())
+                );
+                Console.WriteLine("[DEBUG] Нейросеть создана");
+
+                // Обучение в несколько строк
+                Console.WriteLine("[DEBUG] Создание тренера...");
+                var trainer = new Trainer(network, new MeanSquaredError())
+                    .WithEpochs(5000)
+                    .WithBatchSize(4)
+                    .WithLearningRate(0.1)
+                    .WithShuffle(true);
+                Console.WriteLine("[DEBUG] Тренер создан, начало обучения...");
+
+                trainer.Train(dataset);
+                Console.WriteLine("[DEBUG] Обучение завершено");
+
+                // Проверка результатов
+                Console.WriteLine("\nРезультаты предсказания:");
+                for (int i = 0; i < 4; i++)
+                {
+                    var prediction = network.Predict(features[i]);
+                    Console.WriteLine($"XOR({features[i][0]}, {features[i][1]}) = {prediction[0]:F4} (ожидается: {labels[i][0]})");
+                }
+            }
+            catch (Exception ex)
             {
-                new double[] { 0 },
-                new double[] { 1 },
-                new double[] { 1 },
-                new double[] { 0 }
-            };
-
-            var dataset = new Dataset(features, labels);
-
-            // Создание сети: 2 -> 4 (ReLU) -> 1 (Sigmoid)
-            var network = new NeuralNetwork(
-                new DenseLayer(2, 4, new ReLU()),
-                new DenseLayer(4, 1, new Sigmoid())
-            );
-
-            // Обучение в несколько строк
-            var trainer = new Trainer(network, new MeanSquaredError())
-                .WithEpochs(5000)
-                .WithBatchSize(4)
-                .WithLearningRate(0.1)
-                .WithShuffle(true);
-
-            trainer.Train(dataset);
-
-            // Проверка результатов
-            Console.WriteLine("\nРезультаты предсказания:");
-            for (int i = 0; i < 4; i++)
-            {
-                var prediction = network.Predict(features[i]);
-                Console.WriteLine($"XOR({features[i][0]}, {features[i][1]}) = {prediction[0]:F4} (ожидается: {labels[i][0]})");
+                Console.WriteLine($"[ERROR] Пример 1 упал с ошибкой: {ex.Message}");
+                Console.WriteLine($"[ERROR] Stack trace: {ex.StackTrace}");
+                throw;
             }
         }
     }

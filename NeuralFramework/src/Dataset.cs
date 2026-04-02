@@ -133,7 +133,7 @@ namespace NeuralFramework
             for (int i = 0; i < Count; i++)
                 labelsArray[i] = Labels.Row(i);
             
-            return new Dataset(normalized, labelsArray);
+            return new Dataset((double[][])normalized, (double[][])labelsArray);
         }
 
         /// <summary>

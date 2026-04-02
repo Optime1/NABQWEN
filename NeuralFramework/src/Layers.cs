@@ -52,13 +52,16 @@ namespace NeuralFramework
         {
             Input = input;
             // Z = W * X + b
-            var z = weights * input;
+            // Если вход - это (batch_size x input_size), транспонируем веса для правильного умножения
+            // W: (output_size x input_size), X: (batch_size x input_size)
+            // Нужно: X * W^T = (batch_size x output_size)
+            var z = input * weights.Transpose();
             
             if (useBias)
             {
-                for (int i = 0; i < OutputSize; i++)
-                    for (int j = 0; j < input.Cols; j++)
-                        z[i, j] += biases[i, 0];
+                for (int i = 0; i < input.Rows; i++)
+                    for (int j = 0; j < OutputSize; j++)
+                        z[i, j] += biases[j, 0];
             }
 
             // Применяем функцию активации
@@ -77,20 +80,25 @@ namespace NeuralFramework
                 for (int j = 0; j < Output.Cols; j++)
                     preActivationGrad[i, j] = gradient[i, j] * activationGrad[i, j];
 
-            // Градиент весов: dW = grad * X^T
-            weightGradients = preActivationGrad * Input.Transpose();
+            // Градиент весов: dW = grad^T * X (для X * W^T формата)
+            // preActivationGrad: (batch_size x output_size)
+            // Input: (batch_size x input_size)
+            // dW: (output_size x input_size) = preActivationGrad^T * Input
+            weightGradients = preActivationGrad.Transpose() * Input;
 
-            // Градиент смещений
+            // Градиент смещений: сумма по батчу
             if (useBias)
             {
                 biasGradients = Matrix.Zeros(OutputSize, 1);
                 for (int i = 0; i < OutputSize; i++)
                     for (int j = 0; j < preActivationGrad.Cols; j++)
-                        biasGradients[i, 0] += preActivationGrad[i, j];
+                        biasGradients[i, 0] += preActivationGrad[j, i];
             }
 
-            // Градиент для предыдущего слоя: dX = W^T * grad
-            return weights.Transpose() * preActivationGrad;
+            // Градиент для предыдущего слоя: dX = grad * W
+            // gradient: (batch_size x output_size), W: (output_size x input_size)
+            // dX: (batch_size x input_size) = gradient * W
+            return preActivationGrad * weights;
         }
 
         public override void UpdateWeights(double learningRate)

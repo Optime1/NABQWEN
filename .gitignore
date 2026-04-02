@@ -2,58 +2,32 @@
 # Build artifacts
 bin/
 obj/
-*.dll
 *.exe
+*.dll
 *.pdb
-*.so
-*.dylib
-*.jar
-*.class
-*.o
-*.obj
-*.out
+*.nupkg
+*.snupkg
 
 # Dependencies
 packages/
 node_modules/
-venv/
-.venv/
-__pycache__/
-*.egg-info/
-.Python/
-.pytest_cache/
-.mypy_cache/
+vendor/
 
-# Logs and temp files
+# Logs
 *.log
-*.tmp
-*.temp
-*.swp
-*.swo
 
 # Environment
 .env
 .env.local
-*.env.*
+*.env
 
 # Editors
 .vscode/
 .idea/
 *.swp
 *.swo
+
+# OS generated files
 .DS_Store
 Thumbs.db
-
-# Test and coverage
-coverage/
-htmlcov/
-.coverage
-*.coveragerc
-
-# Distribution / packaging
-dist/
-build/
-*.zip
-*.tar.gz
-*.whl
 ```
