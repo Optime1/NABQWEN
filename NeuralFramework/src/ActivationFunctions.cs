@@ -9,10 +9,11 @@ namespace NeuralFramework
     /// </summary>
     public abstract class ActivationFunction
     {
-        public abstract double Activate(double x);
-        public abstract double Derivative(double x);
-        public Matrix Apply(Matrix m) => m.Apply(Activate);
-        public Matrix ApplyDerivative(Matrix m) => m.Apply(Derivative);
+        public virtual bool IsElementWise => true;
+        public virtual Matrix Apply(Matrix m) => m.Apply(Activate);
+        public virtual Matrix ApplyDerivative(Matrix m) => m.Apply(Derivative);
+        public virtual double Activate(double x) => throw new NotImplementedException();
+        public virtual double Derivative(double x) => throw new NotImplementedException();
     }
 
     /// <summary>
@@ -55,10 +56,9 @@ namespace NeuralFramework
     /// </summary>
     public class Softmax : ActivationFunction
     {
-        public override double Activate(double x) => throw new InvalidOperationException("Softmax работает с вектором");
-        public override double Derivative(double x) => throw new InvalidOperationException("Softmax работает с вектором");
+        public override bool IsElementWise => false;
 
-        public Matrix Apply(Matrix m)
+        public override Matrix Apply(Matrix m)
         {
             var result = new Matrix(m.Rows, m.Cols);
             for (int i = 0; i < m.Rows; i++)
@@ -79,10 +79,15 @@ namespace NeuralFramework
             return result;
         }
 
-        public Matrix ApplyDerivative(Matrix output)
+        public override Matrix ApplyDerivative(Matrix output)
         {
-            // Производная softmax используется в комбинации с CrossEntropy
-            return output;
+            // Для комбинации с CrossEntropy градиент упрощается
+            // Возвращаем output * (1 - output) для каждого элемента
+            var result = new Matrix(output.Rows, output.Cols);
+            for (int i = 0; i < output.Rows; i++)
+                for (int j = 0; j < output.Cols; j++)
+                    result[i, j] = output[i, j] * (1.0 - output[i, j]);
+            return result;
         }
     }
 
