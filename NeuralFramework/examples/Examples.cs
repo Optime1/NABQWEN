@@ -143,11 +143,12 @@ namespace NeuralFramework.Examples
                 
                 int actualClass = 0;
                 maxVal = double.NegativeInfinity;
+                var actualLabelRow = testData.Labels.Row(i);
                 for (int j = 0; j < 3; j++)
                 {
-                    if (testData.Labels[i, j] > maxVal)
+                    if (actualLabelRow[j] > maxVal)
                     {
-                        maxVal = testData.Labels[i, j];
+                        maxVal = actualLabelRow[j];
                         actualClass = j;
                     }
                 }
