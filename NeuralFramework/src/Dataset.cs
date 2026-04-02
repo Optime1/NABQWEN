@@ -129,7 +129,11 @@ namespace NeuralFramework
                     normalized[i][j] = (data[i][j] - means[j]) / stds[j];
             }
             
-            return new Dataset(normalized, Labels);
+            var labelsArray = new double[Count][];
+            for (int i = 0; i < Count; i++)
+                labelsArray[i] = Labels.Row(i);
+            
+            return new Dataset(normalized, labelsArray);
         }
 
         /// <summary>
